@@ -1,7 +1,7 @@
 # ENSE 375 – Software Testing and Validation
 # Academic Grade Analyzer
 
-**Group 3 Team Members:**  
+**Group 3 Members:**  
 * Zifran Chowdhury (Student ID: 200502201)  
 * Gabriel Sampaga (Student ID: 200426525)  
 * Mohammad Suhayb Hoolash (Student ID: 200510097)  
@@ -59,3 +59,47 @@ The goal of this project is to build an Academic Grade Analyzer that accepts cou
 #### 2.2.3 Constraints
 
 ---
+
+*(To be completed in future deliverables)*
+
+## 3 Solution
+
+### 3.1 Solution 1
+### 3.2 Solution 2
+### 3.3 Final Solution
+#### 3.3.1 Components
+#### 3.3.2 Environmental, Societal, Safety, and Economic Considerations
+#### 3.3.3 Test Cases and Results
+#### 3.3.4 Limitations
+
+---
+
+## 4 Team Work
+
+### 4.1 Meeting 1
+**Time:** September 16, 2026, 7:00 PM to 10:00 PM  
+**Agenda:** Topic Selection and Deliverable 1 Task Allocation
+
+| Team Member | Previous Task | Completion State | Next Task |
+| :--- | :--- | :--- | :--- |
+| Member 1 Name | N/A | N/A | Draft Section 2.1 Problem Definition |
+| Member 2 Name | N/A | N/A | Initialize GitHub repository |
+| Member 3 Name | N/A | N/A | Review rubric and setup report template |
+
+### 4.2 Meeting 2
+
+### 4.3 Meeting 3
+
+### 4.4 Meeting 4
+
+---
+
+## 5 Project Management
+
+---
+
+## 6 Conclusion and Future Work
+
+## 7 References
+
+## 8 Appendix
