@@ -77,14 +77,14 @@ The goal of this project is to build an Academic Grade Analyzer that accepts cou
 ## 4 Team Work
 
 ### 4.1 Meeting 1
-**Time:** September 16, 2026, 7:00 PM to 10:00 PM  
-**Agenda:** Topic Selection and Deliverable 1 Task Allocation
+**Time:**  
+**Agenda:** 
 
 | Team Member | Previous Task | Completion State | Next Task |
-| :--- | :--- | :--- | :--- |
-| Member 1 Name | N/A | N/A | Draft Section 2.1 Problem Definition |
-| Member 2 Name | N/A | N/A | Initialize GitHub repository |
-| Member 3 Name | N/A | N/A | Review rubric and setup report template |
+| :--- | :--- | :--- | :--- | 
+| Member 1 Name | N/A | N/A | N/A |
+| Member 2 Name | N/A | N/A | N/A |
+| Member 3 Name | N/A | N/A | N/A |
 
 ### 4.2 Meeting 2
 
