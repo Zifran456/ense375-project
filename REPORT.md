@@ -53,11 +53,45 @@ University students frequently miscalculate their GPAs when managing multiple co
 The goal of this project is to build an Academic Grade Analyzer that accepts course marks and credit values, accurately computes weighted term and cumulative GPAs, and determines academic standing according to university grading policies. The application must be deterministic, easy to run, and structured to allow thorough software testing.
 
 ### 2.2 Design Requirements
-*(To be completed for Deliverable 2)*
-#### 2.2.1 Functions
-#### 2.2.2 Objectives
-#### 2.2.3 Constraints
+The Academic Grade Analyzer shall be designed to provide students with an accurate and reliable method of analyzing their academic performance.
 
+#### 2.2.1 Functions
+The Academic Grade Analyzer shall provide the functionality required to accept, validate, and analyze student academic information. The following functional and non-functional requirements define the expected behaviour and characteristics of the system.
+
+**Functional Requirements:**
+- The system shall allow users to enter the course name, course mark, and corresponding value for each course.
+- The system shall validate that entered marks and credit values are within ranges before performing calculations.
+- The system shall calculate the weighted term GPA based on the marks and credit values provided by the user.
+- The system shall calculate cumulative GPA using previously completed courses and their corresponding credit values.
+- The system shall determine the user's academic standing based on the applicable university grading policies.
+- The system shall provide clear results that allow users to understand how their GPA and academic standing were determined.
+- The system shall produce the same results when provided with the same valid input data.
+
+**Non-Functional Requirements:**
+- The system shall perform deterministic calculations without relying on external services during normal operations.
+- The system shall provide clear error messages when invalid or incomplete information is entered.
+- The system shall be simple enough for a university student to use without specialized technical knowledge.
+- The system shall be structured in a manner that allows its calculations, input validation, and academic-standing logic to be independently tested.
+- The system shall not require users to provide unnecessary personal or sensitive information to perform GPA calculations.
+
+#### 2.2.2 Objectives
+The primary objective of the Academic Grade Analyzer is to provide university students with a simple and reliable tool for analyzing their academic performance. The system is intended to reduce errors associated with manual GPA calculations and help students better understand their academic standing.
+
+**The objectives of the system are to:**
+- Provide students with an accurate method of calculating weighted term and cumulative GPA.
+- Account for differences in course credit values when analyzing academic performance.
+- Help students understand how their GPA and academic standing are determined.
+- Reduce the likelihood of calculation errors associated with manual GPA calculations.
+- Provide a straightforward interface that allows students to analyze their academic performance without specialized technical knowledge.
+- Present calculated results in a clear and understandable manner.
+
+#### 2.2.3 Constraints
+**The design of the Academic Grade Analyzer is subject to the following constraints:**
+- GPA calculations shall follow the grading scale and academic-standing policies specified by the applicable unversity requirements.
+- The system shall account for different course credit values when calculating weighted GPAs rather than treating all courses as equally weighted.
+- The system shall operate using realistic student-provided information and shall not require access to official university records or student information systems.
+- The system shall not require unnecessary personal or senstive information to perform GPA calculations.
+- The system shall provide results as an analytical aid and shall not be presented as a replacement for official academic records or university advising.
 ---
 
 *(To be completed in future deliverables)*
