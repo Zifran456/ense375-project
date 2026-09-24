@@ -87,11 +87,28 @@ The primary objective of the Academic Grade Analyzer is to provide university st
 
 #### 2.2.3 Constraints
 **The design of the Academic Grade Analyzer is subject to the following constraints:**
-- GPA calculations shall follow the grading scale and academic-standing policies specified by the applicable unversity requirements.
-- The system shall account for different course credit values when calculating weighted GPAs rather than treating all courses as equally weighted.
-- The system shall operate using realistic student-provided information and shall not require access to official university records or student information systems.
-- The system shall not require unnecessary personal or senstive information to perform GPA calculations.
-- The system shall provide results as an analytical aid and shall not be presented as a replacement for official academic records or university advising.
+#### Economic Factors
+- The application shall be developed using freely available development tools and shall not require paid external services for its core functionality.
+
+#### Security and Access
+- The application shall not require access to official university records or student information systems.
+- The application shall minimize the collection of personal or sensitive information and only require information necessary to perform academic calculations.
+
+#### Reliability
+- The application shall produce consistent and deterministic GPA and academic-standing results when provided with the same valid input data.
+- The application shall validate course marks and credit values before performing calculations to reduce the possibility of incorrect results.
+
+#### Ethics
+- The application shall apply the predefined grading scale and academic-standing rules consistently to all users.
+- The application shall clearly identify calculated GPA and academic-standing results as estimates and shall not present them as official university records.
+
+#### Societal Impacts
+- The application shall serve as an analytical aid to help students better understand their academic performance.
+- The application shall not be presented as a replacement for official university academic advising or academic records.
+
+#### Technical Constraints
+- GPA calculations shall account for different course credit values rather than treating all courses as equally weighted.
+- The application shall perform its core GPA and academic-standing calculations without relying on external services during normal operation.
 ---
 
 *(To be completed in future deliverables)*
