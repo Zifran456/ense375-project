@@ -111,13 +111,217 @@ The primary objective of the Academic Grade Analyzer is to provide university st
 - The application shall perform its core GPA and academic-standing calculations without relying on external services during normal operation.
 ---
 
-*(To be completed in future deliverables)*
 
-## 3 Solution
 
-### 3.1 Solution 1
-### 3.2 Solution 2
-### 3.3 Final Solution
+# Academic Grade Analyzer — Three Design Alternatives
+
+These UML class diagrams show progressively better software designs for the same scope: entering course marks and credits, calculating weighted term and cumulative GPA, and determining academic standing. The first two use valid UML notation but deliberately weak architecture. Exact grading thresholds and academic-standing rules must be agreed before implementation.
+
+## Solution 1 — One overloaded class
+
+```mermaid
+classDiagram
+direction TB
+class GradeAnalyzerApp {
+  +List~String~ courseNames
+  +List~double~ marks
+  +List~double~ credits
+  +List~String~ termNames
+  +double lastGPA
+  +String standing
+  +readInput()
+  +addCourse()
+  +editCourse()
+  +removeCourse()
+  +validateInput()
+  +convertMarkToPoints(mark) double
+  +calculateTermGPA(term) double
+  +calculateCumulativeGPA() double
+  +determineStanding() String
+  +displayResults()
+}
+```
+
+**Description:** Everything is stored and performed by one class: input, course data, validation, grading rules, GPA calculations, standing, and display.
+
+**What is useful:** It is quick to understand and can work as an initial proof of concept. Both GPA calculations and credit weights are represented.
+
+**Why the design is bad:**
+
+- The class has too many responsibilities, violating the Single Responsibility Principle.
+- Public fields allow callers to bypass validation and change data directly.
+- Separate lists can become inconsistent. Removing a course name but forgetting its mark associates data with the wrong course.
+- Calculations are mixed with input and display, making independent unit tests difficult.
+- Changing the grading scale or interface requires changing the same class.
+- Stored results can become stale after course data changes.
+
+**Testing consequence:** A GPA test may need to initialize unrelated UI and application state. Failures are harder to isolate.
+
+## Solution 2 — Partial separation
+
+```mermaid
+classDiagram
+direction TB
+class AnalyzerView {
+  +readCourseInput()
+  +onCalculate()
+  +displayResults(gpa, standing)
+  +displayError(message)
+}
+class GradeAnalyzer {
+  -double lastGPA
+  -String lastStanding
+  +validateCourse(course) bool
+  +convertMarkToPoints(mark) double
+  +calculateTermGPA(term) double
+  +calculateCumulativeGPA(terms) double
+  +determineStanding(termGPA, cumulativeGPA) String
+}
+class Term {
+  +String name
+  +List~CourseRecord~ courses
+  +addCourse(course)
+  +removeCourse(course)
+}
+class CourseRecord {
+  +String code
+  +double mark
+  +double credits
+}
+AnalyzerView --> GradeAnalyzer : invokes
+AnalyzerView --> Term : edits directly
+GradeAnalyzer ..> Term : reads
+Term "1" *-- "0..*" CourseRecord : contains
+```
+
+**Description:** Course information is grouped into records, courses belong to terms, and the interface is separated from the analyzer.
+
+**Improvements over Solution 1:**
+
+- Each course keeps its code, mark, and credits together, removing the parallel-list problem.
+- Terms explicitly group courses for term GPA; cumulative GPA can use multiple terms.
+- Calculation methods are separated from display methods, making numerical tests easier.
+- Named classes make the structure easier to understand and extend.
+
+**Why it is still weak:**
+
+- GradeAnalyzer still combines validation, mark conversion, GPA calculation, and standing rules.
+- The view directly edits model data and invokes calculations, so there is no controller coordinating the workflow.
+- Public marks, credits, and course lists allow invalid changes without validation.
+- Grading and standing policies remain embedded in the analyzer.
+- Cached GPA and standing can become stale after edits.
+
+**Testing consequence:** Calculation tests improve, but policy changes and UI workflows remain coupled. Invalid data can enter the model through several routes.
+
+## Solution 3 — MVC with focused model services
+
+```mermaid
+classDiagram
+direction TB
+class AnalyzerView {
+  +submitCourseInput()
+  +requestAnalysis(termId)
+  +displayResult(result)
+  +displayError(message)
+}
+class AnalyzerController {
+  +addCourse(termId, code, mark, credits)
+  +editCourse(termId, index, code, mark, credits)
+  +removeCourse(termId, index)
+  +analyze(termId) AnalysisResult
+}
+class Transcript {
+  -List~Term~ terms
+  +addTerm(id, name)
+  +getTerm(id) Term
+  +getAllCourses() List~CourseRecord~
+}
+class Term {
+  -String id
+  -String name
+  -List~CourseRecord~ courses
+  +addCourse(course)
+  +replaceCourse(index, course)
+  +removeCourse(index)
+  +getCourses() List~CourseRecord~
+}
+class CourseRecord {
+  -String code
+  -double mark
+  -double credits
+  +CourseRecord(code, mark, credits)
+  +getMark() double
+  +getCredits() double
+}
+class GPACalculator {
+  +calculate(courses, gradingPolicy) double
+}
+class GradingPolicy {
+  -List~GradeBand~ bands
+  +validateMark(mark)
+  +toGradePoint(mark) double
+}
+class StandingPolicy {
+  -StandingRules rules
+  +evaluate(termGPA, cumulativeGPA, transcript) String
+}
+class AnalysisResult {
+  -double termGPA
+  -double cumulativeGPA
+  -double termCredits
+  -double cumulativeCredits
+  -String standing
+  +getSummary() String
+}
+AnalyzerView --> AnalyzerController : submits requests
+AnalyzerController --> AnalyzerView : presents results or errors
+AnalyzerController --> Transcript : manages
+Transcript "1" *-- "0..*" Term : contains
+Term "1" *-- "0..*" CourseRecord : contains
+AnalyzerController --> GPACalculator : calculates
+AnalyzerController --> GradingPolicy : validates marks
+GPACalculator ..> GradingPolicy : converts marks
+AnalyzerController --> StandingPolicy : evaluates standing
+AnalyzerController ..> AnalysisResult : creates
+AnalyzerView ..> AnalysisResult : displays
+```
+
+**Description:** The view collects input and presents output. The controller coordinates requests. The model consists of transcript data and focused GPA, grading, and standing services. The controller delegates business rules rather than implementing them itself.
+
+**Improvements over Solution 2:**
+
+- The controller gives the UI a single entry point for adding, editing, removing, and analyzing courses.
+- Private fields protect data. CourseRecord construction rejects a missing code, non-finite numbers, and invalid credit values; GradingPolicy validates marks against the chosen scale before records are accepted.
+- Course records are immutable after construction. Editing replaces a record with a validated replacement. Collection getters return read-only views or copies.
+- GPACalculator has one task: calculate weighted GPA. The same method handles a selected term's courses and all completed courses.
+- GradingPolicy owns mark conversion; StandingPolicy owns academic-standing rules. Either policy can change without rewriting the UI or GPA formula.
+- Each analysis creates an immutable AnalysisResult, avoiding shared cached results that silently become outdated. The UI refreshes or clears displayed results after an edit.
+- Transcript, Term, and CourseRecord have explicit ownership and multiplicities.
+
+**Why this is a good design for the project:** It supports MVC, limits coupling, and makes validation, calculations, standing rules, and controller workflows independently testable. It remains small enough for the stated application scope.
+
+**Implementation contracts:**
+
+- Weighted GPA = sum of (grade points multiplied by GPA-eligible credits) divided by total GPA-eligible credits.
+- An empty eligible course list produces a clear "GPA unavailable" response; it does not divide by zero or assume a GPA of zero.
+- Retakes, pass/fail courses, rounding, grade boundaries, and standing thresholds must follow documented project policies.
+- If standing depends on previous terms or standing, StandingPolicy uses the transcript history rather than GPA alone.
+- GradeBand and StandingRules are configuration value types, omitted from this high-level diagram. No university thresholds are assumed here.
+
+**Testing opportunities:** Test grade boundaries and invalid inputs; weighted GPA with unequal credits; term versus cumulative calculations; empty transcripts; policy decision tables; standing transitions where supported by the chosen policy; and controller-to-model integration.
+
+## Comparison
+
+| Aspect | Solution 1 | Solution 2 | Solution 3 |
+|---|---|---|---|
+| Responsibilities | All in one class | UI separated; analyzer overloaded | UI, coordination, data, and policies separated |
+| Course storage | Parallel lists | Course records grouped into terms | Encapsulated transcript, terms, and records |
+| Validation | Easy to bypass | Still bypassable through public fields | Controlled entry and validated records |
+| MVC | Absent | Partial separation | Explicit MVC structure |
+| Policy changes | Edit the application class | Edit the analyzer | Edit the relevant policy |
+| Unit testing | Difficult to isolate | Easier calculations | Independently testable components |
+
+Notation: `+` means public, `-` means private, a solid arrow shows a navigable association, a dashed arrow shows a dependency, and the filled diamond means composition. `1` to `0..*` means one owner may contain zero or more child objects.
 #### 3.3.1 Components
 #### 3.3.2 Environmental, Societal, Safety, and Economic Considerations
 #### 3.3.3 Test Cases and Results
