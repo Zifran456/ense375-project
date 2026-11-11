@@ -324,6 +324,43 @@ AnalyzerView ..> AnalysisResult : displays
 Notation: `+` means public, `-` means private, a solid arrow shows a navigable association, a dashed arrow shows a dependency, and the filled diamond means composition. `1` to `0..*` means one owner may contain zero or more child objects.
 #### 3.3.1 Components
 #### 3.3.2 Environmental, Societal, Safety, and Economic Considerations
+
+The Academic Grade Analyzer was designed with environmental, societal, safety, and economic considerations in mind. Although the application primarily focuses on calculating student GPAs and determining academic standing, these factors are important in ensuring that the system is accessible, reliable, and practical for university students.
+
+**Evironmental Considerations**
+
+The Academic Grade Analyzer is a software-based application that does not require any additional physical hardware or materials to operate. Students can perform GPA calculations without relying on handwritten calculaions or printed academic records. This can reduce unnecessary paper consumption.
+
+The application is also designed to perform its calculations locally without relying on external services during normal operation. This keeps the system relatively lightweight and avoids unnecessary network communications. Although the application still requires electricy and a computer, its environmental impact is relatively small.
+
+**Societal Considerations**
+
+The Academic Grade Anaylzer has a limited societal impact since its primary use is to assist students in calculating their GPAs. Its main benefit is providing a convenient way for students to check their academic performance without having to manually calculate weighted grades.
+
+The application is designed to be straightforward to use and does not require specialized technical knowledge. It also avoids collecting unnecessary personal information.
+
+While the application may be useful for individual students, it is not expected to have significant impact on society as a whole. It is intended to be a supplementary academic planning tool rather than a replacement for official university records or academic advising. Calculated results should therefore be presented as estimates.
+
+**Safety Considerations**
+
+The Academic Grade Anaylzer's main safety concerns involve the accuracy of its calculations, protection of user information, and prevention of misleading results. Incorrect GPA calculations or academic-standing classifications could cause students to misunderstand their academic progress.
+
+To reduce this risk, the application is designed to validate course marks and credit values before performing calculations. Invalid or incomplete inputs should produce clear error messsages rather than incorrect results.
+
+The application must also handle situations where a GPA cannot be calculated, such as when no eligible courses are entered. In these cases, the system should indicate that the GPA is unavailable rather than displaying an inaccurate value.
+
+Additionally, the application is designed to produce consistent results when provided with the same valid inputs. Software testing will be used to verify the accuracy of GPA calculations, input validation, and academic-standing classifications.
+
+**Economic Considerations**
+
+The Academic Grade Anaylzer is intended to develop using freely available development tools, without requiring external services for its core functionality.
+
+The application is also designed to perform its calculations without connecting to official university databases or other external systems. This reduces potential costs associated with maintaining servers, accessing external services, or managing additional infrastructure.
+
+The selected Model-View-Controller (MVC) architecture also provides economic benefits from a development perspective. By separating the user interface, calculation logic, and academic policies, individual components can be modified and tested without requiring major changes to the entire application. This can reduce the time and effort needed for debugging, maintenance, and future improvements.
+
+Overall, these considerations influenced the selection of a design that prioritizes accessibility, affordability, reliability, and maintainability while meeting the project's functional requirements.
+
 #### 3.3.3 Test Cases and Results
 #### 3.3.4 Limitations
 
