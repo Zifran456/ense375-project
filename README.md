@@ -11,7 +11,7 @@ Analyze course marks, calculate weighted GPAs, and understand academic standing.
 
 **University of Regina · Software Testing and Validation**
 
-[Team](#-meet-the-team) · [Overview](#-overview) · [Features](#-planned-features) · [Design](#-how-it-fits-together) · [Testing](#-built-with-testing-in-mind) 
+[Team](#-meet-the-team) · [Overview](#-overview) · [Features](#-planned-features) · [Testing](#-built-with-testing-in-mind) 
 
 </div>
 
@@ -41,30 +41,6 @@ The project follows **Model-View-Controller (MVC)** architecture and **Test-Driv
 | 🎯 | **Academic standing** | Evaluate standing using the project's documented policy. |
 | 💬 | **Clear feedback** | Present results and explain invalid or incomplete input. |
 
-## 🧩 How It Fits Together
-
-The interface collects input, the controller coordinates requests, and the model manages academic data and rules.
-
-```mermaid
-flowchart TB
-    V["🖥️ View: input and results"]
-    C["🎛️ Controller: coordinate requests"]
-    subgraph M["Model"]
-        D["🗂️ Transcript, terms and courses"]
-        G["📊 GPA calculator"]
-        P["📏 Grading policy"]
-        S["🎯 Standing policy"]
-        G -->|convert marks| P
-    end
-    V -->|course input and analysis requests| C
-    C -->|manage course records| D
-    C -->|validate marks| P
-    C -->|calculate weighted GPA| G
-    C -->|evaluate standing| S
-    C -.->|results or errors| V
-```
-
-Each component has a focused responsibility, making it easier to test calculations and policies independently of the interface.
 
 ## 🧪 Built With Testing in Mind
 
