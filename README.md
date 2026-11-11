@@ -11,11 +11,18 @@ Analyze course marks, calculate weighted GPAs, and understand academic standing.
 
 **University of Regina · Software Testing and Validation**
 
-[Overview](#-overview) · [Features](#-planned-features) · [Design](#-how-it-fits-together) · [Testing](#-built-with-testing-in-mind) · [Team](#-meet-the-team)
+[Team](#-meet-the-team) · [Overview](#-overview) · [Features](#-planned-features) · [Design](#-how-it-fits-together) · [Testing](#-built-with-testing-in-mind) 
 
 </div>
 
 ---
+
+## 👥 Meet the Team
+
+| Zifran Chowdhury | Gabriel Sampaga | Mohammad Suhayb Hoolash |
+| :---: | :---: | :---: |
+| Team member | Team member | Team member |
+
 
 ## 📘 Overview
 
@@ -75,11 +82,6 @@ JUnit is planned for automated component tests. Test execution results will be r
 
 See [REPORT.md](REPORT.md) for the requirements, design alternatives, selected architecture, component responsibilities, and testing plan.
 
-## 👥 Meet the Team
-
-| Zifran Chowdhury | Gabriel Sampaga | Mohammad Suhayb Hoolash |
-| :---: | :---: | :---: |
-| Team member | Team member | Team member |
 
 ---
 
