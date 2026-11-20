@@ -322,7 +322,100 @@ AnalyzerView ..> AnalysisResult : displays
 | Unit testing | Difficult to isolate | Easier calculations | Independently testable components |
 
 Notation: `+` means public, `-` means private, a solid arrow shows a navigable association, a dashed arrow shows a dependency, and the filled diamond means composition. `1` to `0..*` means one owner may contain zero or more child objects.
+
 #### 3.3.1 Components
+
+The Academic Grade Analyzer uses the Model-View-Controller (MVC) architecture. Its nine main components separate user interaction, application coordination, academic data, and calculation rules. This organization allows us to test each responsibility independently and then verify the interactions between components.
+
+##### Components and their purposes
+
+**Table 1. Main components of the final solution and the purpose of each.**
+
+| Layer | Component | Main purpose |
+|---|---|---|
+| View | `AnalyzerView` | Collect course input and analysis requests, then display results or error messages. Keeping calculations outside the view allows the interface to change without changing academic rules. |
+| Controller | `AnalyzerController` | Coordinate add, edit, remove, and analysis requests. It checks the target term or course, delegates validation and calculations, and supplies results to the view. |
+| Model | `Transcript` | Organize academic terms and provide their combined course records for cumulative GPA calculations. |
+| Model | `Term` | Group courses within one term and provide controlled operations to add, replace, or remove a course. This defines the course set used for term GPA. |
+| Model | `CourseRecord` | Keep a course's code, mark, and credits together in an immutable record. Construction rejects missing codes, non-finite numbers, and invalid credits; edits require a validated replacement. |
+| Model | `GPACalculator` | Calculate credit-weighted GPA using grade points supplied by `GradingPolicy`. The same calculation is reused for a selected term and the combined eligible courses. |
+| Model | `GradingPolicy` | Validate marks against the chosen scale and convert them to grade points. Separating the scale from the formula allows grading rules to change independently. |
+| Model | `StandingPolicy` | Evaluate academic standing from term GPA, cumulative GPA, and transcript history where required. It keeps standing rules separate from GPA arithmetic. |
+| Model | `AnalysisResult` | Hold an immutable snapshot of GPAs, credit totals, and standing for the view to display. A new analysis produces a new result rather than modifying a shared cached result. |
+
+Two supporting configuration types complete the design: `GradeBand` represents the mark intervals and grade points used by `GradingPolicy`, while `StandingRules` stores the conditions applied by `StandingPolicy`. They contain policy data rather than coordinating application behaviour.
+
+##### Testing methods for each component
+
+Table 2 identifies the selected testing methods and the behaviour each method will check. **These tests are planned; execution and pass/fail results have not yet been recorded in this report.** Section 3.3.3 will document the implemented test cases and their observed results.
+
+**Table 2. Component testing methods and intended checks.**
+
+| Component | Testing methods | Intended checks |
+|---|---|---|
+| `AnalyzerView` | Use-case and integration testing | Enter a course, request analysis, display a result, and display an input error. Confirm that an edit or removal clears or refreshes the previous result. |
+| `AnalyzerController` | Equivalence-class, path, and integration testing | Exercise valid and invalid requests, missing terms, and invalid course indices. Check that rejected edits preserve existing records and that the correct services receive the selected data. |
+| `Transcript` | Equivalence-class and integration testing | Cover zero, one, and multiple terms; retrieve an existing or missing term; verify that the combined collection includes each stored record once. Check that returned collections cannot modify internal storage. |
+| `Term` | Boundary-value and state-transition testing | Test indices at the first and last positions and just outside the valid range. Follow empty → populated → edited → empty states and check the stored records after each operation. |
+| `CourseRecord` | Equivalence-class and boundary-value testing | Check valid and blank codes, positive credits, zero and negative credits, and non-finite numeric values. Verify that accepted records cannot be changed through the public interface. |
+| `GPACalculator` | Equivalence-class, path, and data-flow testing | Cover zero, one, and multiple eligible courses, including unequal credits. Check initialization and accumulation of weighted points and credits, the final division, and the no-eligible-credit path. Compare results with independent hand calculations. |
+| `GradingPolicy` and `GradeBand` | Boundary-value and equivalence-class testing | Test a representative mark in each configured band, values immediately below, at, and above each boundary, and invalid marks. Verify conversion against the documented scale. |
+| `StandingPolicy` and `StandingRules` | Decision-table and boundary-value testing; state-transition testing where history matters | Test every applicable combination of standing conditions and values around each threshold. If the policy uses earlier standing, test the permitted changes between standing states. |
+| `AnalysisResult` | Equivalence-class checks in unit tests, plus integration testing | Check that supplied values are preserved and correctly summarized. Confirm that later edits and analyses do not mutate an earlier result object. |
+
+JUnit will support automated model and controller tests. Integration tests will connect the components, while use-case tests will exercise complete user workflows. White-box paths and definition-use pairs will be derived from the implementation; they cannot be established from the class diagram alone. Boundary values and expected standing outcomes will use the agreed grading scale, precision, and standing rules.
+
+##### Component block diagram
+
+Figure 1 groups the components by MVC layer. Solid labelled arrows indicate requests, access, or ownership; dotted arrows indicate results supplied for presentation. Return values from service calls are omitted to keep the diagram readable: GPA and standing values return to the controller, which constructs the result.
+
+```mermaid
+flowchart TB
+    subgraph ViewLayer["View"]
+        V["AnalyzerView"]
+    end
+    subgraph ControllerLayer["Controller"]
+        C["AnalyzerController"]
+    end
+    subgraph ModelLayer["Model"]
+        subgraph Records["Academic records"]
+            T["Transcript"]
+            TM["Term"]
+            CR["CourseRecord"]
+            T -->|contains| TM
+            TM -->|contains| CR
+        end
+        subgraph Services["Calculations and policies"]
+            G["GPACalculator"]
+            P["GradingPolicy"]
+            S["StandingPolicy"]
+            GB["GradeBand"]
+            SR["StandingRules"]
+            G -->|converts marks through| P
+            P -->|uses| GB
+            S -->|uses| SR
+        end
+        R["AnalysisResult"]
+    end
+    V -->|submits course and analysis requests| C
+    C -->|manages and retrieves courses| T
+    C -->|validates marks| P
+    C -->|supplies eligible courses| G
+    C -->|supplies GPAs and history| S
+    C -->|creates| R
+    C -.->|presents result or error| V
+    R -.->|provides display values| V
+```
+
+**Fig. 1. Block diagram showing the components and their interactions in the final MVC design.**
+
+##### How the components interact
+
+1. **Add or edit a course:** The view sends input to the controller. The controller checks the target term and course index where applicable, validates the mark through `GradingPolicy`, and constructs a `CourseRecord`. The appropriate `Term` is updated only after validation succeeds. A failed request produces an error without changing the stored course.
+2. **Remove a course:** The controller locates the term and validates the index before requesting removal. The view clears or refreshes the previous analysis so an outdated GPA is not presented as current.
+3. **Calculate GPA:** The controller obtains the selected term's courses and the transcript's combined courses. It passes the eligible records to `GPACalculator`, which uses `GradingPolicy` to convert marks and calculates `sum(grade points × credits) / sum(credits)` for each course set.
+4. **Evaluate and display results:** The controller supplies available GPAs and any required history to `StandingPolicy`. It packages the outputs in `AnalysisResult` for the view. If a course set has no eligible credits, the workflow reports its GPA as unavailable instead of dividing by zero or substituting zero; standing must not be evaluated using a fabricated GPA.#### 3.3.1 Components
+
 #### 3.3.2 Environmental, Societal, Safety, and Economic Considerations
 
 The Academic Grade Analyzer was designed with environmental, societal, safety, and economic considerations in mind. Although the application primarily focuses on calculating student GPAs and determining academic standing, these factors are important in ensuring that the system is accessible, reliable, and practical for university students.
